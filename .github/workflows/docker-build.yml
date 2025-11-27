@@ -10,9 +10,10 @@ jobs:
     - name: Checkout del repositorio
       uses: actions/checkout@v3
       
-    # Paso 1: Definir la variable de entorno en minúsculas (MANDATORIO)
+    # PASO CRÍTICO: Definir la variable de entorno en minúsculas
+    # Aquí es donde la función 'lower()' es válida
     - name: Definir OWNER en minúsculas
-      id: lowercase_owner
+      id: lowercase_owner # ID para referenciar la salida
       run: echo "OWNER=${{ lower(github.repository_owner) }}" >> $GITHUB_OUTPUT
 
     - name: Login a GHCR
@@ -23,9 +24,9 @@ jobs:
         password: ${{ secrets.GHCR_TOKEN }}
         
     - name: Construir imagen
-      # Usamos la salida del paso anterior: steps.lowercase_owner.outputs.OWNER
+      # Ahora, referenciamos la variable de salida (OWNER) del paso anterior
       run: docker build -t ghcr.io/${{ steps.lowercase_owner.outputs.OWNER }}/lab-docker-web:latest .
       
     - name: Publicar imagen en GHCR
-      # Usamos la salida del paso anterior
+      # Se usa la misma variable de salida
       run: docker push ghcr.io/${{ steps.lowercase_owner.outputs.OWNER }}/lab-docker-web:latest
